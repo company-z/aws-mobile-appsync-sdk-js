@@ -199,10 +199,12 @@ export class AppSyncRealTimeSubscriptionHandshakeLink extends ApolloLink {
 
   private _removeSubscriptionObserver(subscriptionId) {
     this.subscriptionObserverMap.delete(subscriptionId);
-    if (this.subscriptionObserverMap.size === 0) {
-      // Socket could be sending data to unsubscribe so is required to wait until is flushed
-      this._closeSocketWhenFlushed();
-    }
+    // We want to reuse our socket for new subscriptions during the session so don't close after
+    // the last subscription observer has been removed from the map.
+    // if (this.subscriptionObserverMap.size === 0) {
+    //   // Socket could be sending data to unsubscribe so is required to wait until is flushed
+    //   this._closeSocketWhenFlushed();
+    // }
   }
 
   private _closeSocketWhenFlushed() {
