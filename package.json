@@ -22,5 +22,9 @@
     "ts-jest": "24",
     "typescript": "~3.8",
     "zen-observable-ts": "^1.1.0"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   }
 }
