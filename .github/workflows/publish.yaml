@@ -18,7 +18,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - run: lerna bootstrap
-      - run: lerna prepare
+      - run: lerna run prepare
 
   publish:
     needs: build
