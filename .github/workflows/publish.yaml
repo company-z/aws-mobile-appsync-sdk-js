@@ -20,6 +20,6 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - run: lerna bootstrap
       - run: lerna run prepare
-      - run: lerna publish from-package --yes
+      - run: lerna publish from-package --yes --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
