@@ -53,7 +53,7 @@ const START_ACK_TIMEOUT = 15000;
 /**
  * Default Time in milliseconds to wait for GQL_CONNECTION_KEEP_ALIVE message
  */
-const DEFAULT_KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000;
+const DEFAULT_KEEP_ALIVE_TIMEOUT = 60 * 60 * 1000;
 
 export class AppSyncRealTimeSubscriptionHandshakeLink extends ApolloLink {
   private url: string;
@@ -324,7 +324,7 @@ export class AppSyncRealTimeSubscriptionHandshakeLink extends ApolloLink {
     const {
       subscriptionFailedCallback,
       subscriptionReadyCallback
-    } = this.subscriptionObserverMap.get(subscriptionId);
+    } = this.subscriptionObserverMap.get(subscriptionId) || {};
 
     // This must be done before sending the message in order to be listening immediately
     this.subscriptionObserverMap.set(subscriptionId, {
@@ -579,13 +579,10 @@ export class AppSyncRealTimeSubscriptionHandshakeLink extends ApolloLink {
               `subscription message from AWS AppSyncRealTime: ${message.data} `
             );
             const data = JSON.parse(message.data);
-            const {
-              type,
-              payload: { connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT } = {}
-            } = data;
+            const { type } = data;
             if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
               ackOk = true;
-              this.keepAliveTimeout = connectionTimeoutMs;
+              this.keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
               this.awsRealTimeSocket.onmessage = this._handleIncomingSubscriptionMessage.bind(
                 this
               );
@@ -659,6 +656,8 @@ export class AppSyncRealTimeSubscriptionHandshakeLink extends ApolloLink {
     } = this.subscriptionObserverMap.get(id) || {};
 
     logger({ id, observer, query, variables });
+
+    if (!observer) return;
 
     if (type === MESSAGE_TYPES.GQL_DATA && payload && payload.data) {
       if (observer) {
